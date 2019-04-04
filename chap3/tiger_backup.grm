@@ -1,0 +1,218 @@
+%{
+#include <stdio.h>
+#include "util.h"
+#include "errormsg.h"
+
+int yylex(void); /* function prototype */
+
+void yyerror(char *s)
+{
+ EM_error(EM_tokPos, "%s", s);
+}
+%}
+
+
+%union {
+	int pos;
+	int ival;
+	string sval;
+	}
+
+%token <sval> ID STRING
+%token <ival> INT
+
+%token
+  COMMA COLON SEMICOLON LPAREN RPAREN LBRACK RBRACK
+  LBRACE RBRACE DOT
+  PLUS MINUS TIMES DIVIDE EQ NEQ LT LE GT GE
+  AND OR ASSIGN
+  ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF
+  BREAK NIL
+  FUNCTION VAR TYPE
+
+%start exp
+
+%%
+
+/* This is a skeleton grammar file, meant to illustrate what kind of
+ * declarations are necessary above the %% mark.  Students are expected
+ *  to replace the two dummy productions below with an actual grammar.
+ */
+
+
+
+exp:    lvalue
+   |    NIL
+   |    exp_seq
+   |    no_val
+   |    literal
+   |    negation
+   |    fun_call
+   |    arithmetic
+   |    comparison
+   |    bool_opers
+   |    record_create
+   |    array_create
+   |    assignment
+   |    if_then_else
+   |    if_then
+   |    while
+   |    for
+   |    BREAK
+   |    let
+   |    parentheses
+
+lvalue: ID
+      | lvalue lvalue_one
+      | lvalue lvalue_two
+lvalue_one: DOT ID
+lvalue_two: LBRACK lvalue_three
+lvalue_three: exp RBRACK
+
+exp_seq: LPAREN exp_seq_one
+exp_seq_one: exp_sequence RPAREN
+exp_sequence:   exp exp_sequence
+            |   exp_sequence exp_sequence_one
+exp_sequence_one: SEMICOLON exp
+
+exp_args: exp exp_args_one
+        | exp
+exp_args_one: COMMA exp_args
+
+no_val: LPAREN RPAREN
+      | LET no_val_one
+no_val_one: decs no_val_two
+no_val_two: IN END
+
+literal: INT
+       | STRING
+
+negation: MINUS INT
+
+fun_call: ID fun_call_two
+        | ID fun_call_three
+fun_call_two: LPAREN RPAREN
+fun_call_three: LPAREN fun_call_four
+fun_call_four: exp_args RPAREN
+
+arithmetic: suboradd_exp
+suboradd_exp: exp suboradd_exp_one
+        | suboradd_exp_one suboradd_exp_one
+suboradd_exp_one: suboradd exp
+suboradd: PLUS
+        | MINUS
+divormul_exp: exp divormul_exp_one
+        | divormul_exp divormul_exp_one
+divormul_exp_one: divormul exp
+divormul:   TIMES
+        |   DIVIDE
+
+comparison:     exp comparison_one
+          |     comparison comparison_one
+comparison_one: oper exp
+comparison_two: 
+oper:   EQ
+    |   NEQ
+    |   GT
+    |   LT
+    |   GE
+    |   LE
+ 
+bool_opers:    exp bool_opers_one exp
+bool_opers_one: bool_oper exp
+bool_oper:  AND
+         |  OR
+
+record_create: ID record_create_one
+             | ID record_create_eleven
+record_create_one: LBRACE record_create_two
+record_create_two: ID record_create_three
+record_create_three: EQ record_create_three
+record_create_four: exp record_create_five
+record_create_five: LBRACE record_create_six
+record_create_six: COMMA record_create_seven
+record_create_seven: ID record_create_eight
+record_create_eight: EQ record_create_nine
+record_create_nine: exp record_create_ten
+record_create_ten: RBRACE RBRACE
+record_create_eleven: LBRACE RBRACE
+
+array_create:   ID array_create_one
+array_create_one: LBRACK array_create_two
+array_create_two: exp array_create_three
+array_create_three: RBRACK array_create_four
+array_create_four: OF exp
+
+assignment: lvalue assignment_one
+assignment_one: ASSIGN exp
+
+if_then_else:   IF if_then_else_one
+if_then_else_one: exp if_then_else_two
+if_then_else_two: THEN if_then_else_three
+if_then_else_three: exp if_then_else_four
+if_then_else_four: ELSE exp
+
+if_then:    IF if_then_one
+if_then_one: exp if_then_two
+if_then_two: THEN exp
+
+while:  WHILE while_one
+while_one: exp while_two
+while_two: DO exp
+
+for:    FOR for_one
+for_one: ID for_two
+for_two: ASSIGN for_three
+for_three: exp for_four
+for_four: TO for_five
+for_five: exp for_six
+for_six: DO exp
+
+let:    LET let_one
+let_one: decs let_two
+let_two: IN let_two
+let_three: exp_sequence END
+
+parentheses: LPAREN parentheses_one
+parentheses_one: exp RPAREN
+
+decs:   dec decs
+    |   %empty
+dec:    tydec
+   |    vardec
+   |    fundec
+tydec:  TYPE tydec_one
+tydec_one: ID tydec_two
+tydec_two: EQ ty
+ty:     ID
+  |     ID ty
+  |     %empty
+  |     ARRAY ty_one
+ty_one: OF ID
+tyfields: ID tyfields_one
+tyfields_one: ID tyfields_two
+tyfields_two: LBRACE tyfields_three
+tyfields_three: COMMA tyfields_four
+tyfields_four: ID tyfields_five
+tyfields_five: COLON tyfields_six
+tyfields_six: ID RBRACE
+
+vardec: VAR vardec_one
+      | VAR vardec_three
+vardec_one: ID vardec_two
+vardec_two: ASSIGN exp
+vardec_three: ID vardec_four
+vardec_four: COLON vardec_five
+vardec_five: ID vardec_six
+vardec_six: ASSIGN exp
+
+fundec: FUNCTION fundec_one
+fundec_one: ID fundec_two
+fundec_two: LPAREN fundec_three
+fundec_three: tyfields fundec_four
+fundec_four: RPAREN fundec_five
+           | RPAREN fundec_seven
+fundec_five: EQ exp
+fundec_six: COLON fundec_seven
+fundec_seven: ID fundec_eight
+fundec_eight: EQ exp
