@@ -23,7 +23,7 @@ static binder Binder(void *key, void *value, binder next, void *prevtop)
  return b;
 }
 
-TAB_table TAB_empty(void)
+TAB_table TAB_empty()
 { 
  TAB_table t = checked_malloc(sizeof(*t));
  int i;

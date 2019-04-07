@@ -1,0 +1,3459 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: exp
+
+    2 exp: lvalue
+    3    | NIL
+    4    | sequence
+    5    | no_value
+    6    | INT
+    7    | STRING
+    8    | negation
+    9    | function_call
+   10    | record_create
+   11    | array_create
+   12    | assignment
+   13    | if_state
+   14    | while
+   15    | for
+   16    | BREAK
+   17    | let_exp
+   18    | parentheses
+   19    | algebra
+
+   20 algebra: exp OR exp
+   21        | exp AND exp
+   22        | exp EQ exp
+   23        | exp NEQ exp
+   24        | exp LE exp
+   25        | exp LT exp
+   26        | exp GT exp
+   27        | exp GE exp
+   28        | exp PLUS exp
+   29        | exp MINUS exp
+   30        | exp TIMES exp
+   31        | exp DIVIDE exp
+
+   32 lvalue: ID
+   33       | lvalue_one
+
+   34 lvalue_one: lvalue_one DOT ID
+   35           | lvalue_one LBRACK exp RBRACK
+   36           | ID DOT ID
+   37           | ID LBRACE exp RBRACK
+
+   38 sequence: LPAREN sequence_one RPAREN
+
+   39 sequence_one: exp sequence_two
+
+   40 sequence_two: SEMICOLON exp sequence_two
+   41             | SEMICOLON exp
+
+   42 no_value: LPAREN RPAREN
+
+   43 negation: MINUS exp
+
+   44 function_call: ID LPAREN RPAREN
+   45              | ID LPAREN exp function_call_one RPAREN
+
+   46 function_call_one: %empty
+   47                  | COMMA exp function_call_one
+
+   48 record_create: ID LBRACE record_create_one RBRACE
+
+   49 record_create_one: %empty
+   50                  | ID EQ exp record_create_two
+
+   51 record_create_two: %empty
+   52                  | COMMA ID EQ exp record_create_two
+
+   53 array_create: ID LBRACK exp RBRACK OF exp
+
+   54 assignment: lvalue ASSIGN exp
+
+   55 if_state: IF exp THEN exp
+   56         | IF exp THEN exp ELSE exp
+
+   57 while: WHILE exp DO exp
+
+   58 for: FOR ID ASSIGN exp TO exp DO exp
+
+   59 let_exp: LET decs IN exp_sequence END
+
+   60 exp_sequence: %empty
+   61             | exp_sequence_one
+
+   62 exp_sequence_one: exp SEMICOLON exp_sequence_one
+   63                 | exp
+
+   64 decs: dec decs
+   65     | %empty
+
+   66 dec: tydec
+   67    | vardec
+   68    | fundec
+
+   69 tydec: TYPE ID EQ ty
+
+   70 ty: ID
+   71   | LBRACE tyfields RBRACE
+   72   | ARRAY OF ID
+
+   73 tyfields: %empty
+   74         | ID COLON ID tyfields_one
+
+   75 tyfields_one: %empty
+   76             | COMMA ID COLON ID tyfields_one
+
+   77 vardec: VAR ID ASSIGN exp
+   78       | VAR ID COLON ID ASSIGN exp
+
+   79 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp
+   80       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+   81 parentheses: LPAREN exp RPAREN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ID (258) 32 34 36 37 44 45 48 50 52 53 58 69 70 72 74 76 77 78 79 80
+STRING (259) 7
+INT (260) 6
+COMMA (261) 47 52 76
+COLON (262) 74 76 78 80
+SEMICOLON (263) 40 41 62
+LPAREN (264) 38 42 44 45 79 80 81
+RPAREN (265) 38 42 44 45 79 80 81
+LBRACK (266) 35 53
+RBRACK (267) 35 37 53
+LBRACE (268) 37 48 71
+RBRACE (269) 48 71
+DOT (270) 34 36
+PLUS (271) 28
+MINUS (272) 29 43
+TIMES (273) 30
+DIVIDE (274) 31
+EQ (275) 22 50 52 69 79 80
+NEQ (276) 23
+LT (277) 25
+LE (278) 24
+GT (279) 26
+GE (280) 27
+AND (281) 21
+OR (282) 20
+ASSIGN (283) 54 58 77 78
+ARRAY (284) 72
+IF (285) 55 56
+THEN (286) 55 56
+ELSE (287) 56
+WHILE (288) 57
+FOR (289) 58
+TO (290) 58
+DO (291) 57 58
+LET (292) 59
+IN (293) 59
+END (294) 59
+OF (295) 53 72
+BREAK (296) 16
+NIL (297) 3
+FUNCTION (298) 79 80
+VAR (299) 77 78
+TYPE (300) 69
+LOWER_THAN_ELSE (301)
+UMINUS (302)
+
+
+Nonterminals, with rules where they appear
+
+$accept (48)
+    on left: 0
+program (49)
+    on left: 1, on right: 0
+exp (50)
+    on left: 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19, on right:
+    1 20 21 22 23 24 25 26 27 28 29 30 31 35 37 39 40 41 43 45 47 50
+    52 53 54 55 56 57 58 62 63 77 78 79 80 81
+algebra (51)
+    on left: 20 21 22 23 24 25 26 27 28 29 30 31, on right: 19
+lvalue (52)
+    on left: 32 33, on right: 2 54
+lvalue_one (53)
+    on left: 34 35 36 37, on right: 33 34 35
+sequence (54)
+    on left: 38, on right: 4
+sequence_one (55)
+    on left: 39, on right: 38
+sequence_two (56)
+    on left: 40 41, on right: 39 40
+no_value (57)
+    on left: 42, on right: 5
+negation (58)
+    on left: 43, on right: 8
+function_call (59)
+    on left: 44 45, on right: 9
+function_call_one (60)
+    on left: 46 47, on right: 45 47
+record_create (61)
+    on left: 48, on right: 10
+record_create_one (62)
+    on left: 49 50, on right: 48
+record_create_two (63)
+    on left: 51 52, on right: 50 52
+array_create (64)
+    on left: 53, on right: 11
+assignment (65)
+    on left: 54, on right: 12
+if_state (66)
+    on left: 55 56, on right: 13
+while (67)
+    on left: 57, on right: 14
+for (68)
+    on left: 58, on right: 15
+let_exp (69)
+    on left: 59, on right: 17
+exp_sequence (70)
+    on left: 60 61, on right: 59
+exp_sequence_one (71)
+    on left: 62 63, on right: 61 62
+decs (72)
+    on left: 64 65, on right: 59 64
+dec (73)
+    on left: 66 67 68, on right: 64
+tydec (74)
+    on left: 69, on right: 66
+ty (75)
+    on left: 70 71 72, on right: 69
+tyfields (76)
+    on left: 73 74, on right: 71 79 80
+tyfields_one (77)
+    on left: 75 76, on right: 74 76
+vardec (78)
+    on left: 77 78, on right: 67
+fundec (79)
+    on left: 79 80, on right: 68
+parentheses (80)
+    on left: 81, on right: 18
+
+
+State 0
+
+    0 $accept: . program $end
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    program        go to state 12
+    exp            go to state 13
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 1
+
+   32 lvalue: ID .
+   36 lvalue_one: ID . DOT ID
+   37           | ID . LBRACE exp RBRACK
+   44 function_call: ID . LPAREN RPAREN
+   45              | ID . LPAREN exp function_call_one RPAREN
+   48 record_create: ID . LBRACE record_create_one RBRACE
+   53 array_create: ID . LBRACK exp RBRACK OF exp
+
+    LPAREN  shift, and go to state 29
+    LBRACK  shift, and go to state 30
+    LBRACE  shift, and go to state 31
+    DOT     shift, and go to state 32
+
+    $default  reduce using rule 32 (lvalue)
+
+
+State 2
+
+    7 exp: STRING .
+
+    $default  reduce using rule 7 (exp)
+
+
+State 3
+
+    6 exp: INT .
+
+    $default  reduce using rule 6 (exp)
+
+
+State 4
+
+   38 sequence: LPAREN . sequence_one RPAREN
+   42 no_value: LPAREN . RPAREN
+   81 parentheses: LPAREN . exp RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    RPAREN  shift, and go to state 33
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 34
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    sequence_one   go to state 35
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 5
+
+   43 negation: MINUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 36
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 6
+
+   55 if_state: IF . exp THEN exp
+   56         | IF . exp THEN exp ELSE exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 37
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 7
+
+   57 while: WHILE . exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 38
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 8
+
+   58 for: FOR . ID ASSIGN exp TO exp DO exp
+
+    ID  shift, and go to state 39
+
+
+State 9
+
+   59 let_exp: LET . decs IN exp_sequence END
+
+    FUNCTION  shift, and go to state 40
+    VAR       shift, and go to state 41
+    TYPE      shift, and go to state 42
+
+    $default  reduce using rule 65 (decs)
+
+    decs    go to state 43
+    dec     go to state 44
+    tydec   go to state 45
+    vardec  go to state 46
+    fundec  go to state 47
+
+
+State 10
+
+   16 exp: BREAK .
+
+    $default  reduce using rule 16 (exp)
+
+
+State 11
+
+    3 exp: NIL .
+
+    $default  reduce using rule 3 (exp)
+
+
+State 12
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 48
+
+
+State 13
+
+    1 program: exp .
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 1 (program)
+
+
+State 14
+
+   19 exp: algebra .
+
+    $default  reduce using rule 19 (exp)
+
+
+State 15
+
+    2 exp: lvalue .
+   54 assignment: lvalue . ASSIGN exp
+
+    ASSIGN  shift, and go to state 61
+
+    $default  reduce using rule 2 (exp)
+
+
+State 16
+
+   33 lvalue: lvalue_one .
+   34 lvalue_one: lvalue_one . DOT ID
+   35           | lvalue_one . LBRACK exp RBRACK
+
+    LBRACK  shift, and go to state 62
+    DOT     shift, and go to state 63
+
+    $default  reduce using rule 33 (lvalue)
+
+
+State 17
+
+    4 exp: sequence .
+
+    $default  reduce using rule 4 (exp)
+
+
+State 18
+
+    5 exp: no_value .
+
+    $default  reduce using rule 5 (exp)
+
+
+State 19
+
+    8 exp: negation .
+
+    $default  reduce using rule 8 (exp)
+
+
+State 20
+
+    9 exp: function_call .
+
+    $default  reduce using rule 9 (exp)
+
+
+State 21
+
+   10 exp: record_create .
+
+    $default  reduce using rule 10 (exp)
+
+
+State 22
+
+   11 exp: array_create .
+
+    $default  reduce using rule 11 (exp)
+
+
+State 23
+
+   12 exp: assignment .
+
+    $default  reduce using rule 12 (exp)
+
+
+State 24
+
+   13 exp: if_state .
+
+    $default  reduce using rule 13 (exp)
+
+
+State 25
+
+   14 exp: while .
+
+    $default  reduce using rule 14 (exp)
+
+
+State 26
+
+   15 exp: for .
+
+    $default  reduce using rule 15 (exp)
+
+
+State 27
+
+   17 exp: let_exp .
+
+    $default  reduce using rule 17 (exp)
+
+
+State 28
+
+   18 exp: parentheses .
+
+    $default  reduce using rule 18 (exp)
+
+
+State 29
+
+   44 function_call: ID LPAREN . RPAREN
+   45              | ID LPAREN . exp function_call_one RPAREN
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    RPAREN  shift, and go to state 64
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 65
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 30
+
+   53 array_create: ID LBRACK . exp RBRACK OF exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 66
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 31
+
+   37 lvalue_one: ID LBRACE . exp RBRACK
+   48 record_create: ID LBRACE . record_create_one RBRACE
+
+    ID      shift, and go to state 67
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    $default  reduce using rule 49 (record_create_one)
+
+    exp                go to state 68
+    algebra            go to state 14
+    lvalue             go to state 15
+    lvalue_one         go to state 16
+    sequence           go to state 17
+    no_value           go to state 18
+    negation           go to state 19
+    function_call      go to state 20
+    record_create      go to state 21
+    record_create_one  go to state 69
+    array_create       go to state 22
+    assignment         go to state 23
+    if_state           go to state 24
+    while              go to state 25
+    for                go to state 26
+    let_exp            go to state 27
+    parentheses        go to state 28
+
+
+State 32
+
+   36 lvalue_one: ID DOT . ID
+
+    ID  shift, and go to state 70
+
+
+State 33
+
+   42 no_value: LPAREN RPAREN .
+
+    $default  reduce using rule 42 (no_value)
+
+
+State 34
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   39 sequence_one: exp . sequence_two
+   81 parentheses: LPAREN exp . RPAREN
+
+    SEMICOLON  shift, and go to state 71
+    RPAREN     shift, and go to state 72
+    PLUS       shift, and go to state 49
+    MINUS      shift, and go to state 50
+    TIMES      shift, and go to state 51
+    DIVIDE     shift, and go to state 52
+    EQ         shift, and go to state 53
+    NEQ        shift, and go to state 54
+    LT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GT         shift, and go to state 57
+    GE         shift, and go to state 58
+    AND        shift, and go to state 59
+    OR         shift, and go to state 60
+
+    sequence_two  go to state 73
+
+
+State 35
+
+   38 sequence: LPAREN sequence_one . RPAREN
+
+    RPAREN  shift, and go to state 74
+
+
+State 36
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   43 negation: MINUS exp .
+
+    $default  reduce using rule 43 (negation)
+
+
+State 37
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   55 if_state: IF exp . THEN exp
+   56         | IF exp . THEN exp ELSE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+    THEN    shift, and go to state 75
+
+
+State 38
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   57 while: WHILE exp . DO exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+    DO      shift, and go to state 76
+
+
+State 39
+
+   58 for: FOR ID . ASSIGN exp TO exp DO exp
+
+    ASSIGN  shift, and go to state 77
+
+
+State 40
+
+   79 fundec: FUNCTION . ID LPAREN tyfields RPAREN EQ exp
+   80       | FUNCTION . ID LPAREN tyfields RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 78
+
+
+State 41
+
+   77 vardec: VAR . ID ASSIGN exp
+   78       | VAR . ID COLON ID ASSIGN exp
+
+    ID  shift, and go to state 79
+
+
+State 42
+
+   69 tydec: TYPE . ID EQ ty
+
+    ID  shift, and go to state 80
+
+
+State 43
+
+   59 let_exp: LET decs . IN exp_sequence END
+
+    IN  shift, and go to state 81
+
+
+State 44
+
+   64 decs: dec . decs
+
+    FUNCTION  shift, and go to state 40
+    VAR       shift, and go to state 41
+    TYPE      shift, and go to state 42
+
+    $default  reduce using rule 65 (decs)
+
+    decs    go to state 82
+    dec     go to state 44
+    tydec   go to state 45
+    vardec  go to state 46
+    fundec  go to state 47
+
+
+State 45
+
+   66 dec: tydec .
+
+    $default  reduce using rule 66 (dec)
+
+
+State 46
+
+   67 dec: vardec .
+
+    $default  reduce using rule 67 (dec)
+
+
+State 47
+
+   68 dec: fundec .
+
+    $default  reduce using rule 68 (dec)
+
+
+State 48
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 49
+
+   28 algebra: exp PLUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 83
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 50
+
+   29 algebra: exp MINUS . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 84
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 51
+
+   30 algebra: exp TIMES . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 85
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 52
+
+   31 algebra: exp DIVIDE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 86
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 53
+
+   22 algebra: exp EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 87
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 54
+
+   23 algebra: exp NEQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 88
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 55
+
+   25 algebra: exp LT . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 89
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 56
+
+   24 algebra: exp LE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 90
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 57
+
+   26 algebra: exp GT . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 91
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 58
+
+   27 algebra: exp GE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 92
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 59
+
+   21 algebra: exp AND . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 93
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 60
+
+   20 algebra: exp OR . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 94
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 61
+
+   54 assignment: lvalue ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 95
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 62
+
+   35 lvalue_one: lvalue_one LBRACK . exp RBRACK
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 96
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 63
+
+   34 lvalue_one: lvalue_one DOT . ID
+
+    ID  shift, and go to state 97
+
+
+State 64
+
+   44 function_call: ID LPAREN RPAREN .
+
+    $default  reduce using rule 44 (function_call)
+
+
+State 65
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   45 function_call: ID LPAREN exp . function_call_one RPAREN
+
+    COMMA   shift, and go to state 98
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 46 (function_call_one)
+
+    function_call_one  go to state 99
+
+
+State 66
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   53 array_create: ID LBRACK exp . RBRACK OF exp
+
+    RBRACK  shift, and go to state 100
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+
+State 67
+
+   32 lvalue: ID .
+   36 lvalue_one: ID . DOT ID
+   37           | ID . LBRACE exp RBRACK
+   44 function_call: ID . LPAREN RPAREN
+   45              | ID . LPAREN exp function_call_one RPAREN
+   48 record_create: ID . LBRACE record_create_one RBRACE
+   50 record_create_one: ID . EQ exp record_create_two
+   53 array_create: ID . LBRACK exp RBRACK OF exp
+
+    LPAREN  shift, and go to state 29
+    LBRACK  shift, and go to state 30
+    LBRACE  shift, and go to state 31
+    DOT     shift, and go to state 32
+    EQ      shift, and go to state 101
+
+    $default  reduce using rule 32 (lvalue)
+
+
+State 68
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   37 lvalue_one: ID LBRACE exp . RBRACK
+
+    RBRACK  shift, and go to state 102
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+
+State 69
+
+   48 record_create: ID LBRACE record_create_one . RBRACE
+
+    RBRACE  shift, and go to state 103
+
+
+State 70
+
+   36 lvalue_one: ID DOT ID .
+
+    $default  reduce using rule 36 (lvalue_one)
+
+
+State 71
+
+   40 sequence_two: SEMICOLON . exp sequence_two
+   41             | SEMICOLON . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 104
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 72
+
+   81 parentheses: LPAREN exp RPAREN .
+
+    $default  reduce using rule 81 (parentheses)
+
+
+State 73
+
+   39 sequence_one: exp sequence_two .
+
+    $default  reduce using rule 39 (sequence_one)
+
+
+State 74
+
+   38 sequence: LPAREN sequence_one RPAREN .
+
+    $default  reduce using rule 38 (sequence)
+
+
+State 75
+
+   55 if_state: IF exp THEN . exp
+   56         | IF exp THEN . exp ELSE exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 105
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 76
+
+   57 while: WHILE exp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 106
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 77
+
+   58 for: FOR ID ASSIGN . exp TO exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 107
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 78
+
+   79 fundec: FUNCTION ID . LPAREN tyfields RPAREN EQ exp
+   80       | FUNCTION ID . LPAREN tyfields RPAREN COLON ID EQ exp
+
+    LPAREN  shift, and go to state 108
+
+
+State 79
+
+   77 vardec: VAR ID . ASSIGN exp
+   78       | VAR ID . COLON ID ASSIGN exp
+
+    COLON   shift, and go to state 109
+    ASSIGN  shift, and go to state 110
+
+
+State 80
+
+   69 tydec: TYPE ID . EQ ty
+
+    EQ  shift, and go to state 111
+
+
+State 81
+
+   59 let_exp: LET decs IN . exp_sequence END
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    $default  reduce using rule 60 (exp_sequence)
+
+    exp               go to state 112
+    algebra           go to state 14
+    lvalue            go to state 15
+    lvalue_one        go to state 16
+    sequence          go to state 17
+    no_value          go to state 18
+    negation          go to state 19
+    function_call     go to state 20
+    record_create     go to state 21
+    array_create      go to state 22
+    assignment        go to state 23
+    if_state          go to state 24
+    while             go to state 25
+    for               go to state 26
+    let_exp           go to state 27
+    exp_sequence      go to state 113
+    exp_sequence_one  go to state 114
+    parentheses       go to state 28
+
+
+State 82
+
+   64 decs: dec decs .
+
+    $default  reduce using rule 64 (decs)
+
+
+State 83
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   28        | exp PLUS exp .
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    $default  reduce using rule 28 (algebra)
+
+
+State 84
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   29        | exp MINUS exp .
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    $default  reduce using rule 29 (algebra)
+
+
+State 85
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   30        | exp TIMES exp .
+   31        | exp . DIVIDE exp
+
+    $default  reduce using rule 30 (algebra)
+
+
+State 86
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   31        | exp DIVIDE exp .
+
+    $default  reduce using rule 31 (algebra)
+
+
+State 87
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   22        | exp EQ exp .
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 22 (algebra)
+
+
+State 88
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   23        | exp NEQ exp .
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 23 (algebra)
+
+
+State 89
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   25        | exp LT exp .
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 25 (algebra)
+
+
+State 90
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   24        | exp LE exp .
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 24 (algebra)
+
+
+State 91
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   26        | exp GT exp .
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 26 (algebra)
+
+
+State 92
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   27        | exp GE exp .
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+
+    EQ   error (nonassociative)
+    NEQ  error (nonassociative)
+    LT   error (nonassociative)
+    LE   error (nonassociative)
+    GT   error (nonassociative)
+    GE   error (nonassociative)
+
+    $default  reduce using rule 27 (algebra)
+
+
+State 93
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   21        | exp AND exp .
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+
+    $default  reduce using rule 21 (algebra)
+
+
+State 94
+
+   20 algebra: exp . OR exp
+   20        | exp OR exp .
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+
+    $default  reduce using rule 20 (algebra)
+
+
+State 95
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   54 assignment: lvalue ASSIGN exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 54 (assignment)
+
+
+State 96
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   35 lvalue_one: lvalue_one LBRACK exp . RBRACK
+
+    RBRACK  shift, and go to state 115
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+
+State 97
+
+   34 lvalue_one: lvalue_one DOT ID .
+
+    $default  reduce using rule 34 (lvalue_one)
+
+
+State 98
+
+   47 function_call_one: COMMA . exp function_call_one
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 116
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 99
+
+   45 function_call: ID LPAREN exp function_call_one . RPAREN
+
+    RPAREN  shift, and go to state 117
+
+
+State 100
+
+   53 array_create: ID LBRACK exp RBRACK . OF exp
+
+    OF  shift, and go to state 118
+
+
+State 101
+
+   50 record_create_one: ID EQ . exp record_create_two
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 119
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 102
+
+   37 lvalue_one: ID LBRACE exp RBRACK .
+
+    $default  reduce using rule 37 (lvalue_one)
+
+
+State 103
+
+   48 record_create: ID LBRACE record_create_one RBRACE .
+
+    $default  reduce using rule 48 (record_create)
+
+
+State 104
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   40 sequence_two: SEMICOLON exp . sequence_two
+   41             | SEMICOLON exp .
+
+    SEMICOLON  shift, and go to state 71
+    PLUS       shift, and go to state 49
+    MINUS      shift, and go to state 50
+    TIMES      shift, and go to state 51
+    DIVIDE     shift, and go to state 52
+    EQ         shift, and go to state 53
+    NEQ        shift, and go to state 54
+    LT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GT         shift, and go to state 57
+    GE         shift, and go to state 58
+    AND        shift, and go to state 59
+    OR         shift, and go to state 60
+
+    $default  reduce using rule 41 (sequence_two)
+
+    sequence_two  go to state 120
+
+
+State 105
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   55 if_state: IF exp THEN exp .
+   56         | IF exp THEN exp . ELSE exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+    ELSE    shift, and go to state 121
+
+    $default  reduce using rule 55 (if_state)
+
+
+State 106
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   57 while: WHILE exp DO exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 57 (while)
+
+
+State 107
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   58 for: FOR ID ASSIGN exp . TO exp DO exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+    TO      shift, and go to state 122
+
+
+State 108
+
+   79 fundec: FUNCTION ID LPAREN . tyfields RPAREN EQ exp
+   80       | FUNCTION ID LPAREN . tyfields RPAREN COLON ID EQ exp
+
+    ID  shift, and go to state 123
+
+    $default  reduce using rule 73 (tyfields)
+
+    tyfields  go to state 124
+
+
+State 109
+
+   78 vardec: VAR ID COLON . ID ASSIGN exp
+
+    ID  shift, and go to state 125
+
+
+State 110
+
+   77 vardec: VAR ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 126
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 111
+
+   69 tydec: TYPE ID EQ . ty
+
+    ID      shift, and go to state 127
+    LBRACE  shift, and go to state 128
+    ARRAY   shift, and go to state 129
+
+    ty  go to state 130
+
+
+State 112
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   62 exp_sequence_one: exp . SEMICOLON exp_sequence_one
+   63                 | exp .
+
+    SEMICOLON  shift, and go to state 131
+    PLUS       shift, and go to state 49
+    MINUS      shift, and go to state 50
+    TIMES      shift, and go to state 51
+    DIVIDE     shift, and go to state 52
+    EQ         shift, and go to state 53
+    NEQ        shift, and go to state 54
+    LT         shift, and go to state 55
+    LE         shift, and go to state 56
+    GT         shift, and go to state 57
+    GE         shift, and go to state 58
+    AND        shift, and go to state 59
+    OR         shift, and go to state 60
+
+    $default  reduce using rule 63 (exp_sequence_one)
+
+
+State 113
+
+   59 let_exp: LET decs IN exp_sequence . END
+
+    END  shift, and go to state 132
+
+
+State 114
+
+   61 exp_sequence: exp_sequence_one .
+
+    $default  reduce using rule 61 (exp_sequence)
+
+
+State 115
+
+   35 lvalue_one: lvalue_one LBRACK exp RBRACK .
+
+    $default  reduce using rule 35 (lvalue_one)
+
+
+State 116
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   47 function_call_one: COMMA exp . function_call_one
+
+    COMMA   shift, and go to state 98
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 46 (function_call_one)
+
+    function_call_one  go to state 133
+
+
+State 117
+
+   45 function_call: ID LPAREN exp function_call_one RPAREN .
+
+    $default  reduce using rule 45 (function_call)
+
+
+State 118
+
+   53 array_create: ID LBRACK exp RBRACK OF . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 134
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 119
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   50 record_create_one: ID EQ exp . record_create_two
+
+    COMMA   shift, and go to state 135
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 51 (record_create_two)
+
+    record_create_two  go to state 136
+
+
+State 120
+
+   40 sequence_two: SEMICOLON exp sequence_two .
+
+    $default  reduce using rule 40 (sequence_two)
+
+
+State 121
+
+   56 if_state: IF exp THEN exp ELSE . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 137
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 122
+
+   58 for: FOR ID ASSIGN exp TO . exp DO exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 138
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 123
+
+   74 tyfields: ID . COLON ID tyfields_one
+
+    COLON  shift, and go to state 139
+
+
+State 124
+
+   79 fundec: FUNCTION ID LPAREN tyfields . RPAREN EQ exp
+   80       | FUNCTION ID LPAREN tyfields . RPAREN COLON ID EQ exp
+
+    RPAREN  shift, and go to state 140
+
+
+State 125
+
+   78 vardec: VAR ID COLON ID . ASSIGN exp
+
+    ASSIGN  shift, and go to state 141
+
+
+State 126
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   77 vardec: VAR ID ASSIGN exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 77 (vardec)
+
+
+State 127
+
+   70 ty: ID .
+
+    $default  reduce using rule 70 (ty)
+
+
+State 128
+
+   71 ty: LBRACE . tyfields RBRACE
+
+    ID  shift, and go to state 123
+
+    $default  reduce using rule 73 (tyfields)
+
+    tyfields  go to state 142
+
+
+State 129
+
+   72 ty: ARRAY . OF ID
+
+    OF  shift, and go to state 143
+
+
+State 130
+
+   69 tydec: TYPE ID EQ ty .
+
+    $default  reduce using rule 69 (tydec)
+
+
+State 131
+
+   62 exp_sequence_one: exp SEMICOLON . exp_sequence_one
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp               go to state 112
+    algebra           go to state 14
+    lvalue            go to state 15
+    lvalue_one        go to state 16
+    sequence          go to state 17
+    no_value          go to state 18
+    negation          go to state 19
+    function_call     go to state 20
+    record_create     go to state 21
+    array_create      go to state 22
+    assignment        go to state 23
+    if_state          go to state 24
+    while             go to state 25
+    for               go to state 26
+    let_exp           go to state 27
+    exp_sequence_one  go to state 144
+    parentheses       go to state 28
+
+
+State 132
+
+   59 let_exp: LET decs IN exp_sequence END .
+
+    $default  reduce using rule 59 (let_exp)
+
+
+State 133
+
+   47 function_call_one: COMMA exp function_call_one .
+
+    $default  reduce using rule 47 (function_call_one)
+
+
+State 134
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   53 array_create: ID LBRACK exp RBRACK OF exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 53 (array_create)
+
+
+State 135
+
+   52 record_create_two: COMMA . ID EQ exp record_create_two
+
+    ID  shift, and go to state 145
+
+
+State 136
+
+   50 record_create_one: ID EQ exp record_create_two .
+
+    $default  reduce using rule 50 (record_create_one)
+
+
+State 137
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   56 if_state: IF exp THEN exp ELSE exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 56 (if_state)
+
+
+State 138
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   58 for: FOR ID ASSIGN exp TO exp . DO exp
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+    DO      shift, and go to state 146
+
+
+State 139
+
+   74 tyfields: ID COLON . ID tyfields_one
+
+    ID  shift, and go to state 147
+
+
+State 140
+
+   79 fundec: FUNCTION ID LPAREN tyfields RPAREN . EQ exp
+   80       | FUNCTION ID LPAREN tyfields RPAREN . COLON ID EQ exp
+
+    COLON  shift, and go to state 148
+    EQ     shift, and go to state 149
+
+
+State 141
+
+   78 vardec: VAR ID COLON ID ASSIGN . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 150
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 142
+
+   71 ty: LBRACE tyfields . RBRACE
+
+    RBRACE  shift, and go to state 151
+
+
+State 143
+
+   72 ty: ARRAY OF . ID
+
+    ID  shift, and go to state 152
+
+
+State 144
+
+   62 exp_sequence_one: exp SEMICOLON exp_sequence_one .
+
+    $default  reduce using rule 62 (exp_sequence_one)
+
+
+State 145
+
+   52 record_create_two: COMMA ID . EQ exp record_create_two
+
+    EQ  shift, and go to state 153
+
+
+State 146
+
+   58 for: FOR ID ASSIGN exp TO exp DO . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 154
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 147
+
+   74 tyfields: ID COLON ID . tyfields_one
+
+    COMMA  shift, and go to state 155
+
+    $default  reduce using rule 75 (tyfields_one)
+
+    tyfields_one  go to state 156
+
+
+State 148
+
+   80 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON . ID EQ exp
+
+    ID  shift, and go to state 157
+
+
+State 149
+
+   79 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 158
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 150
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   78 vardec: VAR ID COLON ID ASSIGN exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 78 (vardec)
+
+
+State 151
+
+   71 ty: LBRACE tyfields RBRACE .
+
+    $default  reduce using rule 71 (ty)
+
+
+State 152
+
+   72 ty: ARRAY OF ID .
+
+    $default  reduce using rule 72 (ty)
+
+
+State 153
+
+   52 record_create_two: COMMA ID EQ . exp record_create_two
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 159
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 154
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   58 for: FOR ID ASSIGN exp TO exp DO exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 58 (for)
+
+
+State 155
+
+   76 tyfields_one: COMMA . ID COLON ID tyfields_one
+
+    ID  shift, and go to state 160
+
+
+State 156
+
+   74 tyfields: ID COLON ID tyfields_one .
+
+    $default  reduce using rule 74 (tyfields)
+
+
+State 157
+
+   80 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID . EQ exp
+
+    EQ  shift, and go to state 161
+
+
+State 158
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   79 fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 79 (fundec)
+
+
+State 159
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   52 record_create_two: COMMA ID EQ exp . record_create_two
+
+    COMMA   shift, and go to state 135
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 51 (record_create_two)
+
+    record_create_two  go to state 162
+
+
+State 160
+
+   76 tyfields_one: COMMA ID . COLON ID tyfields_one
+
+    COLON  shift, and go to state 163
+
+
+State 161
+
+   80 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ . exp
+
+    ID      shift, and go to state 1
+    STRING  shift, and go to state 2
+    INT     shift, and go to state 3
+    LPAREN  shift, and go to state 4
+    MINUS   shift, and go to state 5
+    IF      shift, and go to state 6
+    WHILE   shift, and go to state 7
+    FOR     shift, and go to state 8
+    LET     shift, and go to state 9
+    BREAK   shift, and go to state 10
+    NIL     shift, and go to state 11
+
+    exp            go to state 164
+    algebra        go to state 14
+    lvalue         go to state 15
+    lvalue_one     go to state 16
+    sequence       go to state 17
+    no_value       go to state 18
+    negation       go to state 19
+    function_call  go to state 20
+    record_create  go to state 21
+    array_create   go to state 22
+    assignment     go to state 23
+    if_state       go to state 24
+    while          go to state 25
+    for            go to state 26
+    let_exp        go to state 27
+    parentheses    go to state 28
+
+
+State 162
+
+   52 record_create_two: COMMA ID EQ exp record_create_two .
+
+    $default  reduce using rule 52 (record_create_two)
+
+
+State 163
+
+   76 tyfields_one: COMMA ID COLON . ID tyfields_one
+
+    ID  shift, and go to state 165
+
+
+State 164
+
+   20 algebra: exp . OR exp
+   21        | exp . AND exp
+   22        | exp . EQ exp
+   23        | exp . NEQ exp
+   24        | exp . LE exp
+   25        | exp . LT exp
+   26        | exp . GT exp
+   27        | exp . GE exp
+   28        | exp . PLUS exp
+   29        | exp . MINUS exp
+   30        | exp . TIMES exp
+   31        | exp . DIVIDE exp
+   80 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp .
+
+    PLUS    shift, and go to state 49
+    MINUS   shift, and go to state 50
+    TIMES   shift, and go to state 51
+    DIVIDE  shift, and go to state 52
+    EQ      shift, and go to state 53
+    NEQ     shift, and go to state 54
+    LT      shift, and go to state 55
+    LE      shift, and go to state 56
+    GT      shift, and go to state 57
+    GE      shift, and go to state 58
+    AND     shift, and go to state 59
+    OR      shift, and go to state 60
+
+    $default  reduce using rule 80 (fundec)
+
+
+State 165
+
+   76 tyfields_one: COMMA ID COLON ID . tyfields_one
+
+    COMMA  shift, and go to state 155
+
+    $default  reduce using rule 75 (tyfields_one)
+
+    tyfields_one  go to state 166
+
+
+State 166
+
+   76 tyfields_one: COMMA ID COLON ID tyfields_one .
+
+    $default  reduce using rule 76 (tyfields_one)

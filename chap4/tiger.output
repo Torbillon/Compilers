@@ -1,0 +1,379 @@
+Terminals unused in grammar
+
+   STRING
+   INT
+   COMMA
+   COLON
+   RBRACE
+   PLUS
+   MINUS
+   TIMES
+   DIVIDE
+   EQ
+   NEQ
+   LT
+   LE
+   GT
+   GE
+   AND
+   OR
+   ASSIGN
+   ARRAY
+   IF
+   THEN
+   ELSE
+   WHILE
+   FOR
+   TO
+   DO
+   LET
+   IN
+   END
+   OF
+   BREAK
+   FUNCTION
+   VAR
+   TYPE
+   LOWER_THAN_ELSE
+   UMINUS
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: exp
+
+    2 exp: lvalue
+    3    | NIL
+    4    | sequence
+
+    5 lvalue: ID
+    6       | lvalue_one
+
+    7 lvalue_one: lvalue_one DOT ID
+    8           | lvalue_one LBRACK exp RBRACK
+    9           | ID DOT ID
+   10           | ID LBRACE exp RBRACK
+
+   11 sequence: LPAREN sequence_one RPAREN
+
+   12 sequence_one: exp sequence_two
+
+   13 sequence_two: SEMICOLON exp sequence_two
+   14             | SEMICOLON exp
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ID (258) 5 7 9 10
+STRING (259)
+INT (260)
+COMMA (261)
+COLON (262)
+SEMICOLON (263) 13 14
+LPAREN (264) 11
+RPAREN (265) 11
+LBRACK (266) 8
+RBRACK (267) 8 10
+LBRACE (268) 10
+RBRACE (269)
+DOT (270) 7 9
+PLUS (271)
+MINUS (272)
+TIMES (273)
+DIVIDE (274)
+EQ (275)
+NEQ (276)
+LT (277)
+LE (278)
+GT (279)
+GE (280)
+AND (281)
+OR (282)
+ASSIGN (283)
+ARRAY (284)
+IF (285)
+THEN (286)
+ELSE (287)
+WHILE (288)
+FOR (289)
+TO (290)
+DO (291)
+LET (292)
+IN (293)
+END (294)
+OF (295)
+BREAK (296)
+NIL (297) 3
+FUNCTION (298)
+VAR (299)
+TYPE (300)
+LOWER_THAN_ELSE (301)
+UMINUS (302)
+
+
+Nonterminals, with rules where they appear
+
+$accept (48)
+    on left: 0
+program (49)
+    on left: 1, on right: 0
+exp (50)
+    on left: 2 3 4, on right: 1 8 10 12 13 14
+lvalue (51)
+    on left: 5 6, on right: 2
+lvalue_one (52)
+    on left: 7 8 9 10, on right: 6 7 8
+sequence (53)
+    on left: 11, on right: 4
+sequence_one (54)
+    on left: 12, on right: 11
+sequence_two (55)
+    on left: 13 14, on right: 12 13
+
+
+State 0
+
+    0 $accept: . program $end
+
+    ID      shift, and go to state 1
+    LPAREN  shift, and go to state 2
+    NIL     shift, and go to state 3
+
+    program     go to state 4
+    exp         go to state 5
+    lvalue      go to state 6
+    lvalue_one  go to state 7
+    sequence    go to state 8
+
+
+State 1
+
+    5 lvalue: ID .
+    9 lvalue_one: ID . DOT ID
+   10           | ID . LBRACE exp RBRACK
+
+    LBRACE  shift, and go to state 9
+    DOT     shift, and go to state 10
+
+    $default  reduce using rule 5 (lvalue)
+
+
+State 2
+
+   11 sequence: LPAREN . sequence_one RPAREN
+
+    ID      shift, and go to state 1
+    LPAREN  shift, and go to state 2
+    NIL     shift, and go to state 3
+
+    exp           go to state 11
+    lvalue        go to state 6
+    lvalue_one    go to state 7
+    sequence      go to state 8
+    sequence_one  go to state 12
+
+
+State 3
+
+    3 exp: NIL .
+
+    $default  reduce using rule 3 (exp)
+
+
+State 4
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 13
+
+
+State 5
+
+    1 program: exp .
+
+    $default  reduce using rule 1 (program)
+
+
+State 6
+
+    2 exp: lvalue .
+
+    $default  reduce using rule 2 (exp)
+
+
+State 7
+
+    6 lvalue: lvalue_one .
+    7 lvalue_one: lvalue_one . DOT ID
+    8           | lvalue_one . LBRACK exp RBRACK
+
+    LBRACK  shift, and go to state 14
+    DOT     shift, and go to state 15
+
+    $default  reduce using rule 6 (lvalue)
+
+
+State 8
+
+    4 exp: sequence .
+
+    $default  reduce using rule 4 (exp)
+
+
+State 9
+
+   10 lvalue_one: ID LBRACE . exp RBRACK
+
+    ID      shift, and go to state 1
+    LPAREN  shift, and go to state 2
+    NIL     shift, and go to state 3
+
+    exp         go to state 16
+    lvalue      go to state 6
+    lvalue_one  go to state 7
+    sequence    go to state 8
+
+
+State 10
+
+    9 lvalue_one: ID DOT . ID
+
+    ID  shift, and go to state 17
+
+
+State 11
+
+   12 sequence_one: exp . sequence_two
+
+    SEMICOLON  shift, and go to state 18
+
+    sequence_two  go to state 19
+
+
+State 12
+
+   11 sequence: LPAREN sequence_one . RPAREN
+
+    RPAREN  shift, and go to state 20
+
+
+State 13
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 14
+
+    8 lvalue_one: lvalue_one LBRACK . exp RBRACK
+
+    ID      shift, and go to state 1
+    LPAREN  shift, and go to state 2
+    NIL     shift, and go to state 3
+
+    exp         go to state 21
+    lvalue      go to state 6
+    lvalue_one  go to state 7
+    sequence    go to state 8
+
+
+State 15
+
+    7 lvalue_one: lvalue_one DOT . ID
+
+    ID  shift, and go to state 22
+
+
+State 16
+
+   10 lvalue_one: ID LBRACE exp . RBRACK
+
+    RBRACK  shift, and go to state 23
+
+
+State 17
+
+    9 lvalue_one: ID DOT ID .
+
+    $default  reduce using rule 9 (lvalue_one)
+
+
+State 18
+
+   13 sequence_two: SEMICOLON . exp sequence_two
+   14             | SEMICOLON . exp
+
+    ID      shift, and go to state 1
+    LPAREN  shift, and go to state 2
+    NIL     shift, and go to state 3
+
+    exp         go to state 24
+    lvalue      go to state 6
+    lvalue_one  go to state 7
+    sequence    go to state 8
+
+
+State 19
+
+   12 sequence_one: exp sequence_two .
+
+    $default  reduce using rule 12 (sequence_one)
+
+
+State 20
+
+   11 sequence: LPAREN sequence_one RPAREN .
+
+    $default  reduce using rule 11 (sequence)
+
+
+State 21
+
+    8 lvalue_one: lvalue_one LBRACK exp . RBRACK
+
+    RBRACK  shift, and go to state 25
+
+
+State 22
+
+    7 lvalue_one: lvalue_one DOT ID .
+
+    $default  reduce using rule 7 (lvalue_one)
+
+
+State 23
+
+   10 lvalue_one: ID LBRACE exp RBRACK .
+
+    $default  reduce using rule 10 (lvalue_one)
+
+
+State 24
+
+   13 sequence_two: SEMICOLON exp . sequence_two
+   14             | SEMICOLON exp .
+
+    SEMICOLON  shift, and go to state 18
+
+    $default  reduce using rule 14 (sequence_two)
+
+    sequence_two  go to state 26
+
+
+State 25
+
+    8 lvalue_one: lvalue_one LBRACK exp RBRACK .
+
+    $default  reduce using rule 8 (lvalue_one)
+
+
+State 26
+
+   13 sequence_two: SEMICOLON exp sequence_two .
+
+    $default  reduce using rule 13 (sequence_two)

@@ -10,7 +10,7 @@
 typedef struct TAB_table_ *TAB_table;
 
 /* Make a new table mapping "keys" to "values". */
-TAB_table TAB_empty(void);
+TAB_table TAB_empty();
 
 /* Enter the mapping "key"->"value" into table "t", 
  *    shadowing but not destroying any previous binding for "key". */

@@ -43,7 +43,7 @@ string S_name(S_symbol sym)
  return sym->name;
 }
 
-S_table S_empty(void) 
+S_table S_empty() 
 { 
  return TAB_empty();
 }
