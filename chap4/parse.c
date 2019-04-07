@@ -17,9 +17,13 @@ extern A_exp absyn_root;
    return abstract syntax data structure */
 A_exp parse(string fname) 
 {EM_reset(fname);
- if (yyparse() == 0) /* parsing worked */
+ if (yyparse() == 0) /* parsing worked */ {
+   printf("parsing worked\n");
    return absyn_root;
- else return NULL;
+ } else {
+   printf("parsing did worked\n");
+   return NULL;
+ }
 }
 
 int main(int argc, char **argv) {
